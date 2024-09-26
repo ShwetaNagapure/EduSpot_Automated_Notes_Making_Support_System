@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Audio - Educational Website</title>
+  <style>
+    /* Internal CSS for visual appeal */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .upload-section {
+      margin-bottom: 20px;
+    }
+
+    .upload-label {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .upload-label:hover {
+      background-color: #2980b9;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .audio-preview {
+      margin-top: 20px;
+    }
+
+    .audio-preview audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .submit-btn {
+      padding: 12px 25px;
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #229954;
+    }
+
+    .message {
+      font-size: 1rem;
+      color: #27ae60;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Upload Your Audio Lesson</h2>
+
+    <div class="upload-section">
+      <label class="upload-label" for="fileInput">Choose Audio File</label>
+      <input type="file" id="fileInput" accept="audio/*">
+      <div id="fileName"></div>
+    </div>
+
+    <div class="audio-preview" id="audioPreview"></div>
+
+    <button class="submit-btn" id="submitBtn" disabled>Upload Audio</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    // Internal JS to handle file upload and preview
+    const fileInput = document.getElementById('fileInput');
+    const audioPreview = document.getElementById('audioPreview');
+    const fileNameDisplay = document.getElementById('fileName');
+    const submitBtn = document.getElementById('submitBtn');
+    const message = document.getElementById('message');
+
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+
+      if (file) {
+        fileNameDisplay.textContent = `Selected file: ${file.name}`;
+        submitBtn.disabled = false;
+
+        // Create audio preview
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.src = URL.createObjectURL(file);
+
+        audioPreview.innerHTML = '';
+        audioPreview.appendChild(audio);
+      } else {
+        fileNameDisplay.textContent = 'No file selected';
+        audioPreview.innerHTML = '';
+        submitBtn.disabled = true;
+      }
+    });
+
+    submitBtn.addEventListener('click', function() {
+      if (fileInput.files.length > 0) {
+        message.textContent = 'Audio file uploaded successfully!';
+        message.style.color = '#27ae60';
+      } else {
+        message.textContent = 'Please select a file to upload.';
+        message.style.color = '#e74c3c';
+      }
+    });
+  </script>
+
+</body>
+</html>
