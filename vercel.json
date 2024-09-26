@@ -7,6 +7,6 @@
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.12"  // specify your required Python version
+    "PYTHON_VERSION": "3.12" 
   }
 }
