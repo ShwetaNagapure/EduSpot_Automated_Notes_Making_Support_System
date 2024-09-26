@@ -1,16 +1,12 @@
 {
-    "version":2,
-    "builds": [
-        {
-            "src":"./index.py",
-            "use": "@vercel/python",
-            "config":{"runtime":"python3.8"}
-        }
-    ],
-    "routes": [
-        {
-            "src":"/(.*)",
-            "dest":"/"
-        }
-    ]
+  "version": 2,
+  "builds": [
+    {
+      "src": "your_app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.12"  // specify your required Python version
+  }
 }
