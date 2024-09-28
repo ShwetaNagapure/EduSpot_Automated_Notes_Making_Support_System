@@ -1,13 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
+import markdown
+from flask_login import LoginManager,login_user,UserMixin,logout_user
 import speech_recognition as sr
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 from langchain_groq import ChatGroq
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from langchain_community.retrievers.bm25 import BM25Retriever
 from langchain.retrievers import EnsembleRetriever
@@ -17,18 +19,22 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import io
-
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['UPLOAD_FOLDER'] = 'uploads'
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 db = SQLAlchemy(app)
+login_manager=LoginManager()
+login_manager.init_app(app)
 
-class User(db.Model):
+class User(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-
+    def __repr__(self):
+        return f'<User {self.username}>'
 with app.app_context():
     db.create_all()
 
@@ -69,7 +75,7 @@ def create_vector_store_and_retriever(transcription_text):
     doc = Document(page_content=text_documents[0]["page_content"])
     docs = text_splitter.split_documents([doc])
 
-    HF_TOKEN = "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"
+    HF_TOKEN = ""
     embeddings = HuggingFaceInferenceAPIEmbeddings(api_key=HF_TOKEN, model_name="BAAI/bge-base-en-v1.5")
     
     vectorstore = Chroma.from_documents(docs, embeddings)
@@ -86,7 +92,7 @@ def create_vector_store_and_retriever(transcription_text):
     return ensemble_retriever
 
 def generate_notes(transcription_text):
-    groq_api_key = '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'
+    groq_api_key = ''
     model_name = "mixtral-8x7b-32768"
     groq = ChatGroq(groq_api_key=groq_api_key, model_name=model_name)
     prompt_template = f"""
@@ -128,7 +134,7 @@ def generate_notes(transcription_text):
     return response.content
 
 def create_chatbot_chain(ensemble_retriever):
-    llm = ChatGroq(groq_api_key='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',
+    llm = ChatGroq(groq_api_key='',
                    model_name="mixtral-8x7b-32768")
 
     template = """
@@ -151,6 +157,9 @@ def create_chatbot_chain(ensemble_retriever):
     
     return chain
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 @app.route('/')
 def index():
     return render_template('home.html')
@@ -177,7 +186,7 @@ def login():
         if user and check_password_hash(user.password, password):
             session['username'] = username
             flash('Logged in successfully.', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('upload_file'))
         else:
             flash('Invalid username or password.', 'error')
     return render_template('login.html')
@@ -191,45 +200,80 @@ def logout():
 def upload_file():
     if 'username' not in session:
         return redirect(url_for('login'))
+    
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('No file part', 'error')
             return redirect(request.url)
+        
         file = request.files['file']
+        
         if file.filename == '':
             flash('No selected file', 'error')
             return redirect(request.url)
+        
         if file:
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
+
+            # Assuming transcribe_large_audio and generate_notes are defined
             transcription = transcribe_large_audio(file_path)
             notes = generate_notes(transcription)
-            ensemble_retriever = create_vector_store_and_retriever(transcription)
-            session['ensemble_retriever'] = ensemble_retriever
+            # ensemble_retriever = create_vector_store_and_retriever(transcription)
+
+            # session['ensemble_retriever'] = ensemble_retriever  # Ensure it's stored in the session
             session['notes'] = notes
             session['transcription'] = transcription
-            return redirect(url_for('chat'))
+
+            return redirect(url_for('view_notes'))
+    
     return render_template('upload.html')
+
 @app.route('/notes')
 def view_notes():
     if 'username' not in session:
         return redirect(url_for('login'))
     
-    notes = session.get('notes', '')  # Retrieve the notes from the session
-    return render_template('notes.html', notes=notes) 
+    # Retrieve the notes from the session (Markdown format)
+    markdown_notes = session.get('notes', '')
+
+    # Convert the markdown content to HTML using markdown library
+    html_notes = markdown.markdown(markdown_notes)
+
+    # Render the template with the converted HTML content
+    return render_template('notes.html', notes=html_notes)
+ 
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
-    if 'username' not in session or 'ensemble_retriever' not in session:
+    if 'username' not in session:
         return redirect(url_for('login'))
-    
+
     if request.method == 'POST':
         user_input = request.form['user_input']
-        chain = create_chatbot_chain(session['ensemble_retriever'])
-        response = chain.invoke(user_input)
+
+        # Check if ensemble_retriever is available
+        if 'ensemble_retriever' not in session:
+            return jsonify({'response': "No retriever available. Please upload a file first."})
+
+        # Debugging chain creation
+        try:
+            chain = create_chatbot_chain(session['ensemble_retriever'])
+        except Exception as e:
+            print(f"Error creating chatbot chain: {e}")
+            return jsonify({'response': "Error creating chatbot chain."})
+
+        # Debugging chain invocation
+        try:
+            response = chain.invoke(user_input)
+        except Exception as e:
+            print(f"Error invoking chatbot chain: {e}")
+            return jsonify({'response': "Error processing your input."})
+
         return jsonify({'response': response})
-   
     return render_template('chat.html', notes=session.get('notes', ''), transcript=session.get('transcription', ''))
+    return render_template('chat.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
