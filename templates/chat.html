@@ -111,14 +111,118 @@
     .back-btn:hover {
       background-color: #27ae60;
     }
+
+    .navbar {
+    display: flex;
+    align-items: center;
+    background-color: #3866ee; /* Theme color */
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+  }
+
+  /* Left side: Logo and Site Name */
+  .navbar .logo-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar .logo {
+    width: 40px; /* Size of the logo */
+    height: 40px;
+    margin-right: 10px;
+  }
+
+  .navbar .site-name {
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+  }
+
+  /* Right side: Links */
+  .navbar .nav-links {
+    display: flex;
+
+    gap: 20px; /* Spacing between links */
+  }
+
+  .navbar .nav-links a {
+
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .navbar .nav-links a:hover {
+    color: #fca605; /* Hover color */
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .navbar .nav-links {
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      width: 100%;
+    }
+  }
+
+ 
+
+
+</style>
+</head>
+
+
+
+
+
   </style>
 </head>
+
 <body>
 
-  <div class="chat-container">
-    <h2>Chat with Notes</h2>
+<nav class="navbar">
+  <!-- Left side: Logo and site name -->
+  <div class="logo-container" >
+    <img src="/assets/img/eduspot3.png" alt="Logo" class="logo" style="width: 90px; height: 70px;">
+    <span class="site-name">EduSpot</span>
+  </div>
 
-    <div id="chatBox" class="chat-box">
+  <!-- Right side: Navigation Links -->
+  <div class="nav-links" style="    margin-left: 1080px;">
+    <a href="#" style="font-weight: 700; font-size: 1rem;" >Home</a>
+    <a href="#" style="font-weight: 700; font-size: 1rem;" >Registration</a>
+    <a href="#" style="font-weight: 700; font-size: 1rem;" >Login</a>
+    
+   
+  </div>
+
+ 
+</nav>
+ 
+<div style="margin-top: 320px;">
+
+<div style="margin-top: -400px; margin-left: 180px;">
+
+</div>
+
+  <div class="chat-container" style="margin-top: 50px;" >
+<div style="background-color: #3866ee;  margin-top: -20px; height: 40px; width: 540px; margin-left: -20px; border-radius:10px; display: flex">
+  <span  style="font-size:1rem; margin-top: 5px; font-weight: bold;  padding: 5px 10px; color: #fdfdfd; ">User's Name !</span>
+
+<h5 style="margin-top: 14px; color: rgb(167, 217, 255);">Chat with notes</h5></div>
+    <div id="chatBox" class="chat-box" style="margin-top: 10px;">
       <!-- Chat messages will be dynamically appended here -->
     </div>
 
@@ -128,6 +232,7 @@
     </div>
 
     <a href="{{ url_for('view_notes') }}" class="back-btn">Back to Notes</a>
+  </div>
   </div>
 
   <script>
