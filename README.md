@@ -50,8 +50,7 @@ The EduSpot AI system is designed with several key components that process and p
 5. **Note Generation & Display**: Structured notes are generated based on detected keywords and displayed to users for review and revision.
 
 ### System Architecture Diagram
-
-(![image])(https://github.com/user-attachments/assets/86156813-c2f6-43d4-938a-270a0a9e849d)
+(![image](https://github.com/user-attachments/assets/86156813-c2f6-43d4-938a-270a0a9e849d)
 
 ## Workflow
 
