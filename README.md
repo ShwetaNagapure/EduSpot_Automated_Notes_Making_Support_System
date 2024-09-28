@@ -51,7 +51,7 @@ The EduSpot AI system is designed with several key components that process and p
 
 ### System Architecture Diagram
 
-(![image])
+(![image])(https://github.com/user-attachments/assets/86156813-c2f6-43d4-938a-270a0a9e849d)
 
 ## Workflow
 
@@ -171,6 +171,5 @@ Multilingual Support: HuggingFace APIs
 
 ## Links
 
-- **Google Colab Notebook**: [Link to Colab](https://github.com/user-attachments/assets/86156813-c2f6-43d4-938a-270a0a9e849d)
-- **App Hosting Link**: [Live Demo](https://app-hosting-link.com)
+- **Google Colab Notebook**: [Link to Colab](https://colab.research.google.com/drive/1LDeccHNSNkC4nHuCBppIpfaPyMHB3KtD?usp=sharing)
 - **Video Demonstration**: [Watch the Demo](https://video-demo-link.com)
