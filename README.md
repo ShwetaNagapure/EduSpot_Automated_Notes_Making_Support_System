@@ -1,7 +1,7 @@
 
-# EduSpot AI Notes Maker
+# EduSpot Automated Notes-Making Support System
 
-EduSpot AI Notes Maker is a Flask-based web application designed to assist students in capturing and organizing information during fast-paced lectures. Using advanced technologies such as Automatic Speech Recognition (ASR), Generative AI, and Retrieval-Augmented Generation (RAG), the app transcribes lecture audio, identifies key concepts, and generates structured notes. It is particularly useful for students in multilingual environments and helps improve retention and revision efficiency.
+EduSpot is a Flask-based web application designed to assist students in capturing and organizing information during fast-paced lectures. Using advanced technologies such as Automatic Speech Recognition (ASR), Generative AI, and Retrieval-Augmented Generation (RAG), the app transcribes lecture audio, identifies key concepts, and generates structured notes. It is particularly useful for students in multilingual environments and helps improve retention and revision efficiency.
 
 ## Table of Contents
 
@@ -171,6 +171,6 @@ Multilingual Support: HuggingFace APIs
 
 ## Links
 
-- **Google Colab Notebook**: [Link to Colab](https://colab.research.google.com/your-notebook-link)
+- **Google Colab Notebook**: [Link to Colab](![image](https://github.com/user-attachments/assets/86156813-c2f6-43d4-938a-270a0a9e849d)
 - **App Hosting Link**: [Live Demo](https://app-hosting-link.com)
 - **Video Demonstration**: [Watch the Demo](https://video-demo-link.com)
